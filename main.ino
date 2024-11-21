@@ -220,17 +220,15 @@ void enviarDatosFirebase() {
   if (!Firebase.ready()) return;
 
   FirebaseJson json_lectura;
-  String timestamp = String(millis());
-
+  
   json_lectura.set("lm35_temperatura", lm35Temp);
   json_lectura.set("dht11_temperatura", dhtTemp);
   json_lectura.set("dht11_humedad", dhtHum);
-  json_lectura.set("timestamp", timestamp);
+  json_lectura.set("timestamp", String(millis()));
 
-  String path = "/sensores/lecturas/" + timestamp;
-  
-  if (Firebase.RTDB.setJSON(&fbdo, path, &json_lectura)) {
-    Serial.println("✓ Datos enviados a: " + path);
+  // Actualizar datos en 'inicial' en lugar de crear nueva entrada
+  if (Firebase.RTDB.setJSON(&fbdo, "/sensores/lecturas/inicial", &json_lectura)) {
+    Serial.println("✓ Datos actualizados en lecturas/inicial");
   } else {
     Serial.printf("❌ Error enviando datos: %s\n", fbdo.errorReason().c_str());
   }
